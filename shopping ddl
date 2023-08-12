@@ -1,0 +1,81 @@
+--creo la relacion cliente 
+CREATE TABLE cliente ( 
+	id SERIAL PRIMARY KEY, 
+	nombre VARCHAR(20),
+	fecha_nac DATE,
+	telefono INT,
+	dni INT
+	) ;
+
+--creo la relacion informacion medica 
+CREATE TABLE informacion_medica(
+	id SERIAL PRIMARY KEY,
+	grupo_sanguineo VARCHAR(5),
+	alergias VARCHAR(200) NULL,
+	obra_social VARCHAR(20) NULL
+	);
+
+--creo  la relacion empleado
+CREATE TABLE empleado (
+	id SERIAL PRIMARY KEY,
+	nombre VARCHAR(20),
+	telefono INT,
+	direccion VARCHAR(20),
+	id_tienda INT,
+	rol VARCHAR(20),
+	inf_medica INT,
+	FOREIGN KEY (inf_medica) REFERENCES informacion_medica(id)
+	);
+
+--creo la relacion tienda
+CREATE TABLE tienda (
+	id SERIAL PRIMARY KEY,
+	nombre VARCHAR(20),
+	local INT,
+	encargado INT, 
+	FOREIGN KEY (encargado) REFERENCES empleado(id)
+	);
+
+--creo la relacion producto 
+CREATE TABLE producto(
+	id SERIAL PRIMARY KEY,
+	tienda INT,
+	tipo VARCHAR(20),
+	nombre VARCHAR(20),
+	precio INT,
+	FOREIGN KEY (tienda) REFERENCES tienda(id)
+	);
+
+--creo la relacion venta 
+CREATE TABLE venta(
+	cliente INT,
+	producto INT,
+	tienda INT,	
+	fecha DATE,
+	descuentos INT NULL,
+	PRIMARY KEY (cliente, producto, tienda),
+	FOREIGN KEY (cliente) REFERENCES cliente(id),
+	FOREIGN KEY (producto) REFERENCES producto(id),
+	FOREIGN KEY (tienda) REFERENCES tienda(id)
+	);
+
+--agrego la FK en empleado ahora que ya esta creada la relacion tienda
+ALTER TABLE empleado
+ADD CONSTRAINT id_tienda
+FOREIGN KEY (id_tienda) REFERENCES tienda(id) ;
+
+--agrego una columna a la relacion informacion_medica 
+ALTER TABLE informacion_medica
+ADD COLUMN contacto_emergencia VARCHAR(20) NULL ;
+
+--creo la relacion local
+CREATE TABLE local (
+	id SERIAL PRIMARY KEY,
+	sector VARCHAR(20),
+	tamanho DECIMAL
+	);
+
+--agrego la FK en tienda ahora que ya esta creada la relacion local
+ALTER TABLE tienda
+ADD CONSTRAINT local
+FOREIGN KEY (local) REFERENCES local(id) ;
